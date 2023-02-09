@@ -9,7 +9,7 @@ param env string = 'dev'
 param resourceGroupName string = 'rg-${systemCode}-${env}'
 
 // Parameters for app service plan
-param sku string = 'F1'
+param sku string = 'S1'
 
 // deploy resource groups.
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {

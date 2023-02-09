@@ -30,15 +30,13 @@ param sku string
 @description('Name of web apps')
 param appName string = 'app-${systemCode}-${env}'
 
-@description('Name of autoscale settings')
-param assName string = 'ass-${systemCode}-${env}'
-
 @description('Deploy app service plan.')
 resource asp 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: aspName
   location: location
   sku: {
     name: sku
+    capacity: 1
   }
 }
 
@@ -56,46 +54,45 @@ resource app 'Microsoft.Web/sites@2022-03-01' = {
 }
 
 resource ass 'Microsoft.Insights/autoscalesettings@2022-10-01' = {
-  name: assName
+  name: asp.name
   location: location
   properties: {
-    name: 'auto scale settings'
-    enabled: false
-    // targetResourceLocation:
-    // targetResourceUri:
+    name: 'Scale out condition'
+    enabled: true
     profiles: [
       {
+        name: 'Scale out condition'
         capacity: {
           default: '1'
           maximum: '2'
           minimum: '1'
 
         }
-        name: 'auto scale condition'
         rules: [
           {
             scaleAction: {
               cooldown: 'PT5M' // 5 minutes
               direction: 'Increase'
               type: 'ChangeCount'
+              value: '1'
             }
             metricTrigger: {
               metricName: 'CpuPercentage'
               metricResourceUri: asp.id
               operator: 'GreaterThan'
               statistic: 'Average'
-              threshold: 80
+              threshold: 70
               timeAggregation: 'Average'
               timeGrain: 'PT1M'
-              timeWindow: 'PT5M'
+              timeWindow: 'PT10M'
             }
-
           }
           {
             scaleAction: {
               cooldown: 'PT5M'
               direction: 'Decrease'
               type: 'ChangeCount'
+              value: '1'
             }
             metricTrigger: {
               metricName: 'CpuPercentage'
@@ -105,12 +102,13 @@ resource ass 'Microsoft.Insights/autoscalesettings@2022-10-01' = {
               threshold: 20
               timeAggregation: 'Average'
               timeGrain: 'PT1M'
-              timeWindow: 'PT5M'
+              timeWindow: 'PT10M'
             }
           }
-
         ]
       }
     ]
+    targetResourceLocation: location
+    targetResourceUri: asp.id
   }
 }

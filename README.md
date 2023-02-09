@@ -4,6 +4,7 @@ This includes of the following resources:
 - Resource groups
 - App service plan
 - Web apps
+- Autoscale settings
 
 ## Instructions
 To get going with Bicep:
