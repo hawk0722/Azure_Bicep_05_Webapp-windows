@@ -57,7 +57,6 @@ resource ass 'Microsoft.Insights/autoscalesettings@2022-10-01' = {
   name: asp.name
   location: location
   properties: {
-    name: 'Scale out condition'
     enabled: true
     profiles: [
       {
