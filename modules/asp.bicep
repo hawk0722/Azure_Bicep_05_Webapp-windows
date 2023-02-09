@@ -30,7 +30,7 @@ param aspName string = 'asp-${systemCode}-${env}'
 ])
 param sku string
 
-@description('App Service プラン のデプロイ')
+@description('Deploy app service plan.')
 resource asp 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: aspName
   location: location
@@ -39,12 +39,15 @@ resource asp 'Microsoft.Web/serverfarms@2022-03-01' = {
   }
 }
 
-@description('App Service のデプロイ')
+@description('Deploy web app.')
 resource app 'Microsoft.Web/sites@2022-03-01' = {
   name: appName
   location: location
   properties: {
     serverFarmId: asp.id
     httpsOnly: true
+    siteConfig: {
+      windowsFxVersion: 'DOTNET|4.7'
+    }
   }
 }
