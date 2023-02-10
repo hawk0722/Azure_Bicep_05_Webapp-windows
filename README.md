@@ -19,6 +19,15 @@ az login
 az deployment sub create --template-file main.bicep --location <Your location>
 ```
 
+5. Test
+Web App > Development Tools > Advanced Tools > Debug console > PowerShell
+
+```PowerShell:PowerShell
+while ($true) {}
+
+```
+
+
 ## Notes
 - The deployment was tested on windows.
 - Create scale settings rule for app service plan.

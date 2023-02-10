@@ -31,7 +31,6 @@ param sku string
 param appName string = 'app-${systemCode}-${env}'
 
 @description('arrangement of Scale out condition')
-
 param args array = [
   {
     direction: 'Increase'
@@ -102,44 +101,6 @@ resource ass 'Microsoft.Insights/autoscalesettings@2022-10-01' = {
 
         }
         rules: rules
-        // rules: [
-        //   {
-        //     scaleAction: {
-        //       cooldown: 'PT5M' // 5 minutes
-        //       direction: 'Increase'
-        //       type: 'ChangeCount'
-        //       value: '1'
-        //     }
-        //     metricTrigger: {
-        //       metricName: 'CpuPercentage'
-        //       metricResourceUri: asp.id
-        //       operator: 'GreaterThan'
-        //       statistic: 'Average'
-        //       threshold: 70
-        //       timeAggregation: 'Average'
-        //       timeGrain: 'PT1M'
-        //       timeWindow: 'PT10M'
-        //     }
-        //   }
-        //   {
-        //     scaleAction: {
-        //       cooldown: 'PT5M'
-        //       direction: 'Decrease'
-        //       type: 'ChangeCount'
-        //       value: '1'
-        //     }
-        //     metricTrigger: {
-        //       metricName: 'CpuPercentage'
-        //       metricResourceUri: asp.id
-        //       operator: 'LessThan'
-        //       statistic: 'Average'
-        //       threshold: 20
-        //       timeAggregation: 'Average'
-        //       timeGrain: 'PT1M'
-        //       timeWindow: 'PT10M'
-        //     }
-        //   }
-        // ]
       }
     ]
     targetResourceLocation: location
