@@ -30,6 +30,39 @@ param sku string
 @description('Name of web apps')
 param appName string = 'app-${systemCode}-${env}'
 
+@description('arrangement of Scale out condition')
+param args array = [
+  {
+    direction: 'Increase'
+    operator: 'GreaterThan'
+    threshold: 70
+  }
+  {
+    direction: 'Decrease'
+    operator: 'LessThan'
+    threshold: 30
+  }
+]
+
+var rules = [for arg in args: {
+  scaleAction: {
+    cooldown: 'PT5M' // 5 minutes
+    direction: arg.direction
+    type: 'ChangeCount'
+    value: '1'
+  }
+  metricTrigger: {
+    metricName: 'CpuPercentage'
+    metricResourceUri: asp.id
+    operator: arg.operator
+    statistic: 'Average'
+    threshold: arg.threshold
+    timeAggregation: 'Average'
+    timeGrain: 'PT1M'
+    timeWindow: 'PT10M'
+  }
+}]
+
 @description('Deploy app service plan.')
 resource asp 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: aspName
@@ -67,44 +100,7 @@ resource ass 'Microsoft.Insights/autoscalesettings@2022-10-01' = {
           minimum: '1'
 
         }
-        rules: [
-          {
-            scaleAction: {
-              cooldown: 'PT5M' // 5 minutes
-              direction: 'Increase'
-              type: 'ChangeCount'
-              value: '1'
-            }
-            metricTrigger: {
-              metricName: 'CpuPercentage'
-              metricResourceUri: asp.id
-              operator: 'GreaterThan'
-              statistic: 'Average'
-              threshold: 70
-              timeAggregation: 'Average'
-              timeGrain: 'PT1M'
-              timeWindow: 'PT10M'
-            }
-          }
-          {
-            scaleAction: {
-              cooldown: 'PT5M'
-              direction: 'Decrease'
-              type: 'ChangeCount'
-              value: '1'
-            }
-            metricTrigger: {
-              metricName: 'CpuPercentage'
-              metricResourceUri: asp.id
-              operator: 'LessThan'
-              statistic: 'Average'
-              threshold: 20
-              timeAggregation: 'Average'
-              timeGrain: 'PT1M'
-              timeWindow: 'PT10M'
-            }
-          }
-        ]
+        rules: rules
       }
     ]
     targetResourceLocation: location
